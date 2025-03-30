@@ -1,13 +1,13 @@
-package com.example.demo;
+package ar.edu.uade.deremateapp.back;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FinalApplication {
+public class DeRemateBackApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FinalApplication.class, args);
+		SpringApplication.run(DeRemateBackApplication.class, args);
 	}
 
 }
