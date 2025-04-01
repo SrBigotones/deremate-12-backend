@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @Getter
 public class CustomUserDetails implements UserDetails {
+
     private Usuario user;
 
     private List<GrantedAuthority> authorities;

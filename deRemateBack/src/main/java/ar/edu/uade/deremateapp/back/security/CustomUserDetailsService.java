@@ -5,6 +5,7 @@ import ar.edu.uade.deremateapp.back.model.Usuario;
 import ar.edu.uade.deremateapp.back.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
-public class CustomUserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
     private UserRepository usuarioRepository;
@@ -26,7 +27,7 @@ public class CustomUserDetailsService {
 
         Usuario usuario = userOpt.get();
         return CustomUserDetails.builder()
-                .usuario(usuario)
+                .user(usuario)
                 .authorities(new ArrayList<>())
                 .build();
     }

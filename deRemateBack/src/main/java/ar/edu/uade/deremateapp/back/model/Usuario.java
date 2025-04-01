@@ -1,9 +1,7 @@
 package ar.edu.uade.deremateapp.back.model;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import ar.edu.uade.deremateapp.back.dto.UsuarioDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,13 +19,23 @@ public class Usuario {
 
     @Column(nullable = false) private String username;
 
-    @Column(nullable = false) private String email;
-
     @Column(nullable = false) private String password;
+
+    @Column(nullable = false) private String email;
 
     @Column(nullable = false) private String nombre;
 
     @Column(nullable = false) private String apellido;
 
     @Column(nullable = false) private int documento;
+
+    public UsuarioDTO toUsuarioDTO() {
+        return UsuarioDTO.builder()
+                .username(username)
+                .password(password)
+                .email(email)
+                .nombre(nombre)
+                .apellido(apellido)
+                .documento(documento).build();
+    }
 }
