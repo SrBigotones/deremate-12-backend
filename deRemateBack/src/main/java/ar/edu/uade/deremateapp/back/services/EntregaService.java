@@ -1,6 +1,5 @@
 package ar.edu.uade.deremateapp.back.services;
 
-
 import ar.edu.uade.deremateapp.back.dto.EntregaDTO;
 import ar.edu.uade.deremateapp.back.model.Entrega;
 import ar.edu.uade.deremateapp.back.model.Usuario;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,7 +22,9 @@ public class EntregaService {
 
     public List<EntregaDTO> getEntregasPorUsuario(Long usuarioId) {
         List<Entrega> entregas = entregaRepository.findByUsuarioId(usuarioId);
-        return entregas.stream().map(this::convertirADTO).collect(Collectors.toList());
+        return entregas.stream()
+                .map(this::convertirADTO)
+                .collect(Collectors.toList());
     }
 
     public EntregaDTO crearEntrega(EntregaDTO dto) {
@@ -32,9 +32,9 @@ public class EntregaService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Entrega entrega = new Entrega();
-        entrega.setDireccion(dto.getDireccion());
+        entrega.setDireccionEntrega(dto.getDireccion());
         entrega.setEstado("Pendiente");
-        entrega.setFecha(dto.getFecha());
+        entrega.setFechaEntrega(dto.getFecha());
         entrega.setObservaciones(dto.getObservaciones());
         entrega.setUsuario(usuario);
 
@@ -44,16 +44,16 @@ public class EntregaService {
 
     public EntregaDTO actualizarEstado(Long entregaId, String nuevoEstado) {
         Entrega entrega = entregaRepository.findById(entregaId)
-                .orElseThrow(() -> new EntregaNoEncontradaException("Entrega no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Entrega no encontrada"));
 
         entrega.setEstado(nuevoEstado);
-        entregaRepository.save(entrega);
+        entrega = entregaRepository.save(entrega);
         return convertirADTO(entrega);
     }
 
     public EntregaDTO getEntregaPorId(Long entregaId) {
         Entrega entrega = entregaRepository.findById(entregaId)
-                .orElseThrow(() -> new EntregaNoEncontradaException("Entrega no encontrada"));
+                .orElseThrow(() -> new RuntimeException("Entrega no encontrada"));
 
         return convertirADTO(entrega);
     }
@@ -61,9 +61,9 @@ public class EntregaService {
     private EntregaDTO convertirADTO(Entrega entrega) {
         EntregaDTO dto = new EntregaDTO();
         dto.setId(entrega.getId());
-        dto.setDireccion(entrega.getDireccion());
+        dto.setDireccion(entrega.getDireccionEntrega());
         dto.setEstado(entrega.getEstado());
-        dto.setFecha(entrega.getFecha());
+        dto.setFecha(entrega.getFechaEntrega());
         dto.setObservaciones(entrega.getObservaciones());
         dto.setUsuarioId(entrega.getUsuario().getId());
         return dto;

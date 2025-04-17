@@ -25,23 +25,23 @@ public class EntregaController {
     private EntregaService entregaService;
 
     @Autowired
-    private UserService usuarioService; // si necesitas obtener el usuario actual desde el token
+    private UserService usuarioService;
 
-    // 1. Obtener todas las entregas del usuario actual
+    
     @GetMapping("/mis-entregas")
     public ResponseEntity<List<EntregaDTO>> getMisEntregas() {
-        // obtenés el ID del usuario logueado desde el token
-        Long usuarioId = usuarioService.obtenerUsuario(Long id);
+        
+        Long usuarioId = usuarioService.obtenerUsuario(1L).getId(); 
         return ResponseEntity.ok(entregaService.getEntregasPorUsuario(usuarioId));
     }
 
-    // 2. Crear una nueva entrega
+    
     @PostMapping
     public ResponseEntity<EntregaDTO> crearEntrega(@RequestBody EntregaDTO entregaDto) {
         return ResponseEntity.ok(entregaService.crearEntrega(entregaDto));
     }
 
-    // 3. Cambiar el estado de una entrega
+    
     @PutMapping("/{id}/estado")
     public ResponseEntity<EntregaDTO> actualizarEstado(
             @PathVariable Long id,
@@ -50,7 +50,7 @@ public class EntregaController {
         return ResponseEntity.ok(entregaService.actualizarEstado(id, nuevoEstado));
     }
 
-    // 4. Ver detalle de una entrega
+   
     @GetMapping("/{id}")
     public ResponseEntity<EntregaDTO> getEntregaPorId(@PathVariable Long id) {
         return ResponseEntity.ok(entregaService.getEntregaPorId(id));
