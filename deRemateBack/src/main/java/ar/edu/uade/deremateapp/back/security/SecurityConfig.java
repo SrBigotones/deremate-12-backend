@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,7 +26,7 @@ import java.util.Collections;
 public class SecurityConfig {
 
     @Autowired private CustomUserDetailsService userDetailsService;
-
+    @Autowired private JwtTokenFilter jwtTokenFilter;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -38,6 +39,12 @@ public class SecurityConfig {
                 .csrf(crsf -> crsf.disable())
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .headers(head -> head.frameOptions(frame -> frame.disable()));
+
+        http.addFilterBefore(
+                jwtTokenFilter,
+                UsernamePasswordAuthenticationFilter.class
+        );
+
         return http.build();
     }
 

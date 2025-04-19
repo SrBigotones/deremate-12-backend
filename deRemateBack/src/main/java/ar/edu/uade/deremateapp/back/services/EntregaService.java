@@ -2,12 +2,14 @@ package ar.edu.uade.deremateapp.back.services;
 
 import ar.edu.uade.deremateapp.back.dto.EntregaDTO;
 import ar.edu.uade.deremateapp.back.model.Entrega;
+import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
 import ar.edu.uade.deremateapp.back.model.Usuario;
 import ar.edu.uade.deremateapp.back.repository.EntregaRepository;
 import ar.edu.uade.deremateapp.back.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,8 +35,8 @@ public class EntregaService {
 
         Entrega entrega = new Entrega();
         entrega.setDireccionEntrega(dto.getDireccion());
-        entrega.setEstado("Pendiente");
-        entrega.setFechaEntrega(dto.getFecha());
+        entrega.setEstado(EstadoEntrega.PENDIENTE);
+        entrega.setFechaCreacion(LocalDateTime.now());
         entrega.setObservaciones(dto.getObservaciones());
         entrega.setUsuario(usuario);
 
@@ -42,7 +44,7 @@ public class EntregaService {
         return convertirADTO(guardada);
     }
 
-    public EntregaDTO actualizarEstado(Long entregaId, String nuevoEstado) {
+    public EntregaDTO actualizarEstado(Long entregaId, EstadoEntrega nuevoEstado) {
         Entrega entrega = entregaRepository.findById(entregaId)
                 .orElseThrow(() -> new RuntimeException("Entrega no encontrada"));
 
@@ -63,7 +65,7 @@ public class EntregaService {
         dto.setId(entrega.getId());
         dto.setDireccion(entrega.getDireccionEntrega());
         dto.setEstado(entrega.getEstado());
-        dto.setFecha(entrega.getFechaEntrega());
+        dto.setFechaEntrega(entrega.getFechaEntrega());
         dto.setObservaciones(entrega.getObservaciones());
         dto.setUsuarioId(entrega.getUsuario().getId());
         return dto;

@@ -2,6 +2,9 @@ package ar.edu.uade.deremateapp.back.controllers;
 
 import java.util.List;
 
+import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
+import ar.edu.uade.deremateapp.back.model.Usuario;
+import ar.edu.uade.deremateapp.back.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,9 +33,8 @@ public class EntregaController {
     
     @GetMapping("/mis-entregas")
     public ResponseEntity<List<EntregaDTO>> getMisEntregas() {
-        
-        Long usuarioId = usuarioService.obtenerUsuario(1L).getId(); 
-        return ResponseEntity.ok(entregaService.getEntregasPorUsuario(usuarioId));
+        Usuario user = SecurityUtils.getCurrentUser();
+        return ResponseEntity.ok(entregaService.getEntregasPorUsuario(user.getId()));
     }
 
     
@@ -45,7 +47,7 @@ public class EntregaController {
     @PutMapping("/{id}/estado")
     public ResponseEntity<EntregaDTO> actualizarEstado(
             @PathVariable Long id,
-            @RequestParam String nuevoEstado
+            @RequestParam EstadoEntrega nuevoEstado
     ) {
         return ResponseEntity.ok(entregaService.actualizarEstado(id, nuevoEstado));
     }
