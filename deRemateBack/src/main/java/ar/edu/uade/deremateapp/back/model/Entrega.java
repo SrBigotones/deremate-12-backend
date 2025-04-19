@@ -1,0 +1,47 @@
+package ar.edu.uade.deremateapp.back.model;
+
+import ar.edu.uade.deremateapp.back.dto.EntregaDTO;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+public class Entrega {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String direccionEntrega;
+
+    private LocalDateTime fechaEntrega;
+    private LocalDateTime fechaCreacion;
+
+    private EstadoEntrega estado;
+
+    private String observaciones;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
+
+    public EntregaDTO convertirADTO() {
+        EntregaDTO dto = new EntregaDTO();
+        dto.setId(this.getId());
+        dto.setDireccion(this.getDireccionEntrega());
+        dto.setEstado(this.getEstado());
+        dto.setFechaEntrega(this.getFechaEntrega());
+        dto.setObservaciones(this.getObservaciones());
+        dto.setUsuarioId(this.getUsuario().getId());
+        return dto;
+    }
+}

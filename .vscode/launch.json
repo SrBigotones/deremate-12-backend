@@ -9,6 +9,16 @@
             "projectName": "final",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-DeRemateBackApplication<final>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "ar.edu.uade.deremateapp.back.DeRemateBackApplication",
+            "projectName": "final",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
