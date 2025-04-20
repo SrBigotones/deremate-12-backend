@@ -29,6 +29,9 @@ public class Usuario {
 
     @Column(nullable = false) private int documento;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false) private EstadoUsuario estado;
+
     public UsuarioDTO toUsuarioDTO() {
         return UsuarioDTO.builder()
                 .username(username)

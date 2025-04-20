@@ -70,7 +70,14 @@ public class AuthController {
         Usuario nuevaPersona = authService.registrarPersona(usuario);
 
         UsuarioDTO usuarioDTO = nuevaPersona.toUsuarioDTO();
+
         return ResponseEntity.ok(usuarioDTO);
     }
 
+//    // Confirmación
+//    @PostMapping("/confirmar-registro")
+//    public JwtDto confirm(@RequestBody ConfirmDto dto) {
+//        service.validateCode(dto.email(), dto.code());
+//        return jwtService.issueToken(dto.email());
+//    }
 }
