@@ -25,7 +25,7 @@ public class EntregaService {
     public List<EntregaDTO> getEntregasPorUsuario(Long usuarioId) {
         List<Entrega> entregas = entregaRepository.findByUsuarioId(usuarioId);
         return entregas.stream()
-                .map(this::convertirADTO)
+                .map(Entrega::convertirADTO)
                 .collect(Collectors.toList());
     }
 
@@ -41,7 +41,7 @@ public class EntregaService {
         entrega.setUsuario(usuario);
 
         Entrega guardada = entregaRepository.save(entrega);
-        return convertirADTO(guardada);
+        return guardada.convertirADTO();
     }
 
     public EntregaDTO actualizarEstado(Long entregaId, EstadoEntrega nuevoEstado) {
@@ -50,24 +50,19 @@ public class EntregaService {
 
         entrega.setEstado(nuevoEstado);
         entrega = entregaRepository.save(entrega);
-        return convertirADTO(entrega);
+        return entrega.convertirADTO();
     }
 
     public EntregaDTO getEntregaPorId(Long entregaId) {
         Entrega entrega = entregaRepository.findById(entregaId)
                 .orElseThrow(() -> new RuntimeException("Entrega no encontrada"));
 
-        return convertirADTO(entrega);
+        return entrega.convertirADTO();
     }
 
-    private EntregaDTO convertirADTO(Entrega entrega) {
-        EntregaDTO dto = new EntregaDTO();
-        dto.setId(entrega.getId());
-        dto.setDireccion(entrega.getDireccionEntrega());
-        dto.setEstado(entrega.getEstado());
-        dto.setFechaEntrega(entrega.getFechaEntrega());
-        dto.setObservaciones(entrega.getObservaciones());
-        dto.setUsuarioId(entrega.getUsuario().getId());
-        return dto;
+    public List<Entrega> getEntregasPendientes(Long usuarioId){
+        return entregaRepository.findByUsuarioIdAndEstado(usuarioId, EstadoEntrega.PENDIENTE);
     }
+
+
 }
