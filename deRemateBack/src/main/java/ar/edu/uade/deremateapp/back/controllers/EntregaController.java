@@ -2,9 +2,11 @@ package ar.edu.uade.deremateapp.back.controllers;
 
 import java.util.List;
 
+import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
+import ar.edu.uade.deremateapp.back.model.Usuario;
+import ar.edu.uade.deremateapp.back.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.uade.deremateapp.back.dto.EntregaDTO;
-import ar.edu.uade.deremateapp.back.security.CustomUserDetails;
 import ar.edu.uade.deremateapp.back.services.EntregaService;
 import ar.edu.uade.deremateapp.back.services.UserService;
-import ar.edu.uade.deremateapp.back.util.SecurityUtils;
 
 @RestController
 @RequestMapping("/api/entregas")
@@ -33,16 +33,9 @@ public class EntregaController {
     
     @GetMapping("/mis-entregas")
     public ResponseEntity<List<EntregaDTO>> getMisEntregas() {
-        CustomUserDetails userDetails = (CustomUserDetails)
-            SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    
-        Long usuarioId = userDetails.getUser().getId();
-    
-        return ResponseEntity.ok(entregaService.getEntregasPorUsuario(usuarioId));
+        Usuario user = SecurityUtils.getCurrentUser();
+        return ResponseEntity.ok(entregaService.getEntregasPorUsuario(user.getId()));
     }
-    
-
-
 
     
     @PostMapping
@@ -54,13 +47,13 @@ public class EntregaController {
     @PutMapping("/{id}/estado")
     public ResponseEntity<EntregaDTO> actualizarEstado(
             @PathVariable Long id,
-            @RequestParam String nuevoEstado
+            @RequestParam EstadoEntrega nuevoEstado
     ) {
         return ResponseEntity.ok(entregaService.actualizarEstado(id, nuevoEstado));
     }
 
    
-    @GetMapping("/entrega/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<EntregaDTO> getEntregaPorId(@PathVariable Long id) {
         return ResponseEntity.ok(entregaService.getEntregaPorId(id));
     }

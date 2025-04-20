@@ -24,26 +24,25 @@ import java.util.Collections;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
+    @Autowired private CustomUserDetailsService userDetailsService;
+    @Autowired private JwtTokenFilter jwtTokenFilter;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/h2-console/**", "/auth/login", "/auth/registro").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .csrf(crsf -> crsf.disable())
-            .cors(c -> c.configurationSource(corsConfigurationSource()))
-            .headers(head -> head.frameOptions(frame -> frame.disable()));
+                .authorizeHttpRequests(auth ->
+                        auth
+                                .requestMatchers("/h2-console/**", "/auth/login", "/auth/registro")
+                                .permitAll()
+                                .anyRequest().authenticated()
+                )
+                .csrf(crsf -> crsf.disable())
+                .cors(c -> c.configurationSource(corsConfigurationSource()))
+                .headers(head -> head.frameOptions(frame -> frame.disable()));
 
-        // ✅ Aca se agrega el filtro que valida el token antes que UsernamePasswordAuth
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(
+                jwtTokenFilter,
+                UsernamePasswordAuthenticationFilter.class
+        );
 
         return http.build();
     }

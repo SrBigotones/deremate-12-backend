@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -20,9 +21,10 @@ public class Entrega {
 
     private String direccionEntrega;
 
-    private LocalDate fechaEntrega;
+    private LocalDateTime fechaEntrega;
+    private LocalDateTime fechaCreacion;
 
-    private String estado;
+    private EstadoEntrega estado;
 
     private String observaciones;
 
