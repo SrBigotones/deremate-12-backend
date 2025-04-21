@@ -1,10 +1,15 @@
 package ar.edu.uade.deremateapp.back.controllers;
 
 
+import ar.edu.uade.deremateapp.back.dto.ConfirmacionRegistroDTO;
+import ar.edu.uade.deremateapp.back.dto.ErrorDTO;
 import ar.edu.uade.deremateapp.back.dto.LoginDTO;
 import ar.edu.uade.deremateapp.back.dto.UsuarioDTO;
 import ar.edu.uade.deremateapp.back.exceptions.CamposVaciosException;
+import ar.edu.uade.deremateapp.back.exceptions.CodigoConfirmacionRegistroNotFoundEception;
 import ar.edu.uade.deremateapp.back.exceptions.MailAlreadyUsedException;
+import ar.edu.uade.deremateapp.back.exceptions.UsuarioConEmailNotFoundException;
+import ar.edu.uade.deremateapp.back.model.EstadoUsuario;
 import ar.edu.uade.deremateapp.back.model.Usuario;
 import ar.edu.uade.deremateapp.back.security.JwtTokenUtil;
 import ar.edu.uade.deremateapp.back.services.AuthService;
@@ -12,6 +17,7 @@ import ar.edu.uade.deremateapp.back.services.UserService;
 import ar.edu.uade.deremateapp.back.util.SecurityUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,7 +44,7 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody LoginDTO loginDto){
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDto) {
 
         Usuario p = loginDto.toPersona();
         Authentication authenticationRequest = UsernamePasswordAuthenticationToken.unauthenticated(loginDto.getEmail(), loginDto.getPassword());
@@ -57,16 +63,22 @@ public class AuthController {
     @PostMapping("/registro")
     public ResponseEntity<UsuarioDTO> guardarPersona(@Valid @RequestBody UsuarioDTO user) throws CamposVaciosException, MailAlreadyUsedException {
         // Verifica si algún campo está vacío o contiene solo espacios en blanco
-        if (user.getNombre().trim().isEmpty() || user.getApellido().trim().isEmpty() || user.getEmail().trim().isEmpty() ||
-                user.getPassword().trim().isEmpty() || user.getUsername().trim().isEmpty()) {
+        if (user.getNombre().trim().isEmpty() || user.getApellido().trim().isEmpty() || user.getEmail().trim().isEmpty() || user.getPassword().trim().isEmpty() || user.getUsername().trim().isEmpty()) {
             throw new CamposVaciosException("No se pueden dejar espacios vacíos");
         }
 
-        if (userService.buscarUsuarioPorMail(user.getEmail()).isPresent()) {
-            throw new MailAlreadyUsedException();
+        Usuario usuario = user.toUsuario();
+
+        var optUsuarioPorMail = userService.buscarUsuarioPorMail(user.getEmail());
+        if (optUsuarioPorMail.isPresent() ) {
+            if (optUsuarioPorMail.get().estaActivo()) {
+                throw new MailAlreadyUsedException();
+            }
+            else {
+                usuario = optUsuarioPorMail.get();
+            }
         }
 
-        Usuario usuario = user.toUsuario();
         Usuario nuevaPersona = authService.registrarPersona(usuario);
 
         UsuarioDTO usuarioDTO = nuevaPersona.toUsuarioDTO();
@@ -74,10 +86,16 @@ public class AuthController {
         return ResponseEntity.ok(usuarioDTO);
     }
 
-//    // Confirmación
-//    @PostMapping("/confirmar-registro")
-//    public JwtDto confirm(@RequestBody ConfirmDto dto) {
-//        service.validateCode(dto.email(), dto.code());
-//        return jwtService.issueToken(dto.email());
-//    }
+    @PostMapping("/confirmar-registro")
+    public ResponseEntity<?> confirm(@RequestBody ConfirmacionRegistroDTO dto) throws UsuarioConEmailNotFoundException, CodigoConfirmacionRegistroNotFoundEception {
+        Usuario usuario = userService.buscarUsuarioPorMail(dto.getEmail()).orElseThrow(() -> new UsuarioConEmailNotFoundException(dto.getEmail()));
+
+        if (authService.esCodigoDeRegistroValido(usuario, dto.getCodigo())) {
+            userService.confirmarRegistro(usuario);
+            return ResponseEntity.ok().build();
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDTO("Codigo de confirmacion invalido"));
+        }
+    }
 }
