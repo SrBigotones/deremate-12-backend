@@ -34,7 +34,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/h2-console/**", "/auth/login", "/auth/registro", "/auth/confirmar-registro").permitAll()
+                                .requestMatchers("/h2-console/**", "/auth/login", "/auth/registro", "/auth/confirmar-registro", "/auth/olvido-password", "/auth/confirmar-passwd-recovery").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .csrf(crsf -> crsf.disable())
