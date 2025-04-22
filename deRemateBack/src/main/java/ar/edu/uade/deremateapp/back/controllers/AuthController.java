@@ -1,10 +1,7 @@
 package ar.edu.uade.deremateapp.back.controllers;
 
 
-import ar.edu.uade.deremateapp.back.dto.ConfirmacionRegistroDTO;
-import ar.edu.uade.deremateapp.back.dto.ErrorDTO;
-import ar.edu.uade.deremateapp.back.dto.LoginDTO;
-import ar.edu.uade.deremateapp.back.dto.UsuarioDTO;
+import ar.edu.uade.deremateapp.back.dto.*;
 import ar.edu.uade.deremateapp.back.exceptions.CamposVaciosException;
 import ar.edu.uade.deremateapp.back.exceptions.CodigoConfirmacionRegistroNotFoundEception;
 import ar.edu.uade.deremateapp.back.exceptions.MailAlreadyUsedException;
@@ -92,6 +89,50 @@ public class AuthController {
 
         if (authService.esCodigoDeRegistroValido(usuario, dto.getCodigo())) {
             userService.confirmarRegistro(usuario);
+            return ResponseEntity.ok().build();
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDTO("Codigo de confirmacion invalido"));
+        }
+    }
+
+
+
+
+    @PostMapping("/olvido-password")
+    public ResponseEntity<UsuarioDTO> olvidoPassword(@Valid @RequestBody UsuarioDTO user) throws CamposVaciosException, UsuarioConEmailNotFoundException {
+        // Verifica si algún campo está vacío o contiene solo espacios en blanco
+        if (user.getEmail().trim().isEmpty()){
+            throw new CamposVaciosException("No se puede dejar el campo email vacío");
+        }
+
+        Usuario usuario = user.toUsuario();
+
+        var optUsuarioPorMail = userService.buscarUsuarioPorMail(user.getEmail());
+        if (optUsuarioPorMail.isPresent() ) {
+            if (optUsuarioPorMail.get().estaActivo()) {
+                usuario = optUsuarioPorMail.get();
+            }
+            else {
+                throw new UsuarioConEmailNotFoundException(user.getEmail());
+            }
+        }
+
+        Usuario nuevaPersona = authService.passwordRecovery(usuario);
+
+        UsuarioDTO usuarioDTO = nuevaPersona.toUsuarioDTO();
+
+        return ResponseEntity.ok(usuarioDTO);
+    }
+
+
+    @PostMapping("/confirmar-passwd-recovery")
+    public ResponseEntity<?> confirmRecovery(@RequestBody ConfirmarPasswordRecoveryDTO dto) throws UsuarioConEmailNotFoundException, CodigoConfirmacionRegistroNotFoundEception {
+        Usuario usuario = userService.buscarUsuarioPorMail(dto.getEmail()).orElseThrow(() -> new UsuarioConEmailNotFoundException(dto.getEmail()));
+
+        if (authService.esCodigoDeRegistroValido(usuario, dto.getCodigo())) {
+            usuario.setPassword(dto.getPassword());
+            authService.updatePassword(usuario);
             return ResponseEntity.ok().build();
         }
         else {

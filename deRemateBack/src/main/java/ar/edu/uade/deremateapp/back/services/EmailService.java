@@ -21,6 +21,8 @@ public class EmailService {
 
     @Value("${email.confirmation.body.template}")
     private String emailConfirmationBodyTemplate;
+    @Value("${email.password.recovery.body.template}")
+    private String emailPasswordRecoveryTemplate;
 
     @Value("${email.confirmation.subject}")
     private String emailConfirmationSubject;
@@ -55,6 +57,14 @@ public class EmailService {
                 "codigo", codigoConfirmacion);
 
         enviarMail(usuario.getEmail(), emailConfirmationSubject, completarEmailTemplate(emailConfirmationBodyTemplate, params));
+    }
+
+    public void enviarMensajeOlvidoPassword(Usuario usuario, String codigoConfirmacion) {
+        var params = Map.of("nombre", usuario.getNombre(),
+                "apellido", usuario.getApellido(),
+                "codigo", codigoConfirmacion);
+
+        enviarMail(usuario.getEmail(), emailConfirmationSubject, completarEmailTemplate(emailPasswordRecoveryTemplate, params));
     }
 
     private String completarEmailTemplate(String template, Map<String, String> params) {

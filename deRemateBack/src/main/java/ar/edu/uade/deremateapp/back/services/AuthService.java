@@ -41,6 +41,23 @@ public class AuthService {
     }
 
     @Transactional
+    public Usuario updatePassword(Usuario usuario) {
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+
+        return userRepository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario passwordRecovery(Usuario usuario) {
+
+        String codigo = SecurityUtils.createRandomDigits();
+        guardarCodigo(usuario, codigo);
+        emailService.enviarMensajeOlvidoPassword(usuario, codigo);
+
+        return usuario;
+    }
+
+    @Transactional
     public void guardarCodigo(Usuario usuario, String codigo) {
         Optional<CodigoConfirmacionRegistro> optCodigo = codigoConfirmacionRegistroRepository.findById(usuario.getId());
 
