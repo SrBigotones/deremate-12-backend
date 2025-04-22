@@ -39,6 +39,7 @@ public class Entrega {
         dto.setId(this.getId());
         dto.setDireccion(this.getDireccionEntrega());
         dto.setEstado(this.getEstado());
+        dto.setFechaCreacion(this.getFechaCreacion());
         dto.setFechaEntrega(this.getFechaEntrega());
         dto.setObservaciones(this.getObservaciones());
         dto.setUsuarioId(this.getUsuario().getId());

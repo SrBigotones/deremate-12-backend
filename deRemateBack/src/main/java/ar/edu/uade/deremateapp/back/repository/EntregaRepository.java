@@ -11,5 +11,5 @@ import java.util.List;
 public interface EntregaRepository extends JpaRepository<Entrega, Long> {
     List<Entrega> findByUsuarioId(Long usuarioId);
     List<Entrega> findByEstado(EstadoEntrega estado);
-    List<Entrega> findByUsuarioIdAndEstado(Long usuarioId, EstadoEntrega estado);
+    List<Entrega> findByUsuarioIdAndEstadoNotIn(Long usuarioId, List<EstadoEntrega> estados);
 }
