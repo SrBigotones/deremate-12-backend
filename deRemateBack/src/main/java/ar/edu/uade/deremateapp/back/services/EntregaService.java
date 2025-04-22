@@ -22,11 +22,9 @@ public class EntregaService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<EntregaDTO> getEntregasPorUsuario(Long usuarioId) {
+    public List<Entrega> getEntregasPorUsuario(Long usuarioId) {
         List<Entrega> entregas = entregaRepository.findByUsuarioId(usuarioId);
-        return entregas.stream()
-                .map(Entrega::convertirADTO)
-                .collect(Collectors.toList());
+        return entregas;
     }
 
     public EntregaDTO crearEntrega(EntregaDTO dto) {
@@ -61,7 +59,9 @@ public class EntregaService {
     }
 
     public List<Entrega> getEntregasPendientes(Long usuarioId){
-        return entregaRepository.findByUsuarioIdAndEstado(usuarioId, EstadoEntrega.PENDIENTE);
+
+        List listaEstados = List.of(EstadoEntrega.CANCELADO, EstadoEntrega.ENTREGADO);
+        return entregaRepository.findByUsuarioIdAndEstadoNotIn(usuarioId, listaEstados);
     }
 
 
