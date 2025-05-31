@@ -22,11 +22,9 @@ public class EntregaService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<EntregaDTO> getEntregasPorUsuario(Long usuarioId) {
+    public List<Entrega> getEntregasPorUsuario(Long usuarioId) {
         List<Entrega> entregas = entregaRepository.findByUsuarioId(usuarioId);
-        return entregas.stream()
-                .map(this::convertirADTO)
-                .collect(Collectors.toList());
+        return entregas;
     }
 
     public EntregaDTO crearEntrega(EntregaDTO dto) {
@@ -41,7 +39,7 @@ public class EntregaService {
         entrega.setUsuario(usuario);
 
         Entrega guardada = entregaRepository.save(entrega);
-        return convertirADTO(guardada);
+        return guardada.convertirADTO();
     }
 
     public EntregaDTO actualizarEstado(Long entregaId, EstadoEntrega nuevoEstado) {
@@ -50,24 +48,21 @@ public class EntregaService {
 
         entrega.setEstado(nuevoEstado);
         entrega = entregaRepository.save(entrega);
-        return convertirADTO(entrega);
+        return entrega.convertirADTO();
     }
 
     public EntregaDTO getEntregaPorId(Long entregaId) {
         Entrega entrega = entregaRepository.findById(entregaId)
                 .orElseThrow(() -> new RuntimeException("Entrega no encontrada"));
 
-        return convertirADTO(entrega);
+        return entrega.convertirADTO();
     }
 
-    private EntregaDTO convertirADTO(Entrega entrega) {
-        EntregaDTO dto = new EntregaDTO();
-        dto.setId(entrega.getId());
-        dto.setDireccion(entrega.getDireccionEntrega());
-        dto.setEstado(entrega.getEstado());
-        dto.setFechaEntrega(entrega.getFechaEntrega());
-        dto.setObservaciones(entrega.getObservaciones());
-        dto.setUsuarioId(entrega.getUsuario().getId());
-        return dto;
+    public List<Entrega> getEntregasPendientes(Long usuarioId){
+
+        List listaEstados = List.of(EstadoEntrega.CANCELADO, EstadoEntrega.ENTREGADO);
+        return entregaRepository.findByUsuarioIdAndEstadoNotIn(usuarioId, listaEstados);
     }
+
+
 }

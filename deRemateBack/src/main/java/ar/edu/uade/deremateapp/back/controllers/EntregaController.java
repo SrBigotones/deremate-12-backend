@@ -1,7 +1,9 @@
 package ar.edu.uade.deremateapp.back.controllers;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import ar.edu.uade.deremateapp.back.model.Entrega;
 import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
 import ar.edu.uade.deremateapp.back.model.Usuario;
 import ar.edu.uade.deremateapp.back.util.SecurityUtils;
@@ -34,7 +36,12 @@ public class EntregaController {
     @GetMapping("/mis-entregas")
     public ResponseEntity<List<EntregaDTO>> getMisEntregas() {
         Usuario user = SecurityUtils.getCurrentUser();
-        return ResponseEntity.ok(entregaService.getEntregasPorUsuario(user.getId()));
+
+        var entregas = entregaService.getEntregasPorUsuario(user.getId());
+
+        var entregasDto = entregas.stream().map(Entrega::convertirADTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(entregasDto);
     }
 
     
@@ -56,5 +63,17 @@ public class EntregaController {
     @GetMapping("/{id}")
     public ResponseEntity<EntregaDTO> getEntregaPorId(@PathVariable Long id) {
         return ResponseEntity.ok(entregaService.getEntregaPorId(id));
+    }
+
+    @GetMapping("/pendientes")
+    public ResponseEntity<List<EntregaDTO>> getEntregasPendientes() {
+        var usu = SecurityUtils.getCurrentUser();
+        var entregas = entregaService.getEntregasPendientes(usu.getId());
+
+        var entregasDto = entregas.stream().map(Entrega::convertirADTO)
+                .collect(Collectors.toList());
+
+
+        return ResponseEntity.ok(entregasDto);
     }
 }

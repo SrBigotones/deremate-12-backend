@@ -2,9 +2,11 @@ package ar.edu.uade.deremateapp.back.services;
 
 
 import ar.edu.uade.deremateapp.back.dto.UsuarioDTO;
+import ar.edu.uade.deremateapp.back.model.EstadoUsuario;
 import ar.edu.uade.deremateapp.back.model.Usuario;
 import ar.edu.uade.deremateapp.back.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -25,4 +27,8 @@ public class UserService
         return userRepository.findByEmail(mail);
     }
 
+    public void confirmarRegistro(Usuario usuario) {
+        usuario.setEstado(EstadoUsuario.ACTIVO);
+        userRepository.save(usuario);
+    }
 }
