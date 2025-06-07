@@ -21,6 +21,7 @@ public class Entrega {
     private Long id;
 
     private String direccionEntrega;
+    private String direccionDeposito;
 
     private LocalDateTime fechaEntrega;
     private LocalDateTime fechaCreacion;
@@ -38,6 +39,7 @@ public class Entrega {
         EntregaDTO dto = new EntregaDTO();
         dto.setId(this.getId());
         dto.setDireccion(this.getDireccionEntrega());
+        dto.setDireccionDeposito(this.getDireccionDeposito());
         dto.setEstado(this.getEstado());
         dto.setFechaCreacion(this.getFechaCreacion());
         dto.setFechaEntrega(this.getFechaEntrega());
