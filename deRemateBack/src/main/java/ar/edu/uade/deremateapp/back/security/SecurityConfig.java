@@ -59,7 +59,15 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         //configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173")); // ESTO PARA ANDROID STUDIO
-        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8081")); // ESTO PARA REACT NATIVE
+        //configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8081")); // ESTO PARA REACT NATIVE
+
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:8081", // para probar en la compu
+                "http://192.168.100.34:8081", // para probar desde el emulador
+                "http://10.0.2.2:8081" // Android Studio emulador
+        ));
+
+
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization"));
 
