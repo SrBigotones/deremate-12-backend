@@ -2,10 +2,7 @@ package ar.edu.uade.deremateapp.back.controllers;
 
 
 import ar.edu.uade.deremateapp.back.dto.*;
-import ar.edu.uade.deremateapp.back.exceptions.CamposVaciosException;
-import ar.edu.uade.deremateapp.back.exceptions.CodigoConfirmacionRegistroNotFoundEception;
-import ar.edu.uade.deremateapp.back.exceptions.MailAlreadyUsedException;
-import ar.edu.uade.deremateapp.back.exceptions.UsuarioConEmailNotFoundException;
+import ar.edu.uade.deremateapp.back.exceptions.*;
 import ar.edu.uade.deremateapp.back.model.EstadoUsuario;
 import ar.edu.uade.deremateapp.back.model.Usuario;
 import ar.edu.uade.deremateapp.back.security.JwtTokenUtil;
@@ -100,22 +97,15 @@ public class AuthController {
 
 
     @PostMapping("/olvido-password")
-    public ResponseEntity<UsuarioDTO> olvidoPassword(@Valid @RequestBody UsuarioDTO user) throws CamposVaciosException, UsuarioConEmailNotFoundException {
+    public ResponseEntity<UsuarioDTO> olvidoPassword(@Valid @RequestBody UsuarioDTO user) throws CamposVaciosException, UsuarioConEmailNotFoundException, UsuarioInactivoException {
         // Verifica si algún campo está vacío o contiene solo espacios en blanco
         if (user.getEmail().trim().isEmpty()){
             throw new CamposVaciosException("No se puede dejar el campo email vacío");
         }
 
-        Usuario usuario = user.toUsuario();
-
-        var optUsuarioPorMail = userService.buscarUsuarioPorMail(user.getEmail());
-        if (optUsuarioPorMail.isPresent() ) {
-            if (optUsuarioPorMail.get().estaActivo()) {
-                usuario = optUsuarioPorMail.get();
-            }
-            else {
-                throw new UsuarioConEmailNotFoundException(user.getEmail());
-            }
+        var usuario = userService.buscarUsuarioPorMail(user.getEmail()).orElseThrow(() -> new UsuarioConEmailNotFoundException(user.getEmail()));
+        if (!usuario.estaActivo()) {
+             throw new UsuarioInactivoException();
         }
 
         Usuario nuevaPersona = authService.passwordRecovery(usuario);
