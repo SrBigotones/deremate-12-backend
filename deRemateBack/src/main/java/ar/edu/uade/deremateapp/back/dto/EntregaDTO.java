@@ -11,6 +11,7 @@ import java.util.Date;
 public class EntregaDTO {
     private Long id;
     private String direccion;
+    private String direccionDeposito;
     private EstadoEntrega estado;
     private LocalDateTime fechaEntrega;
     private LocalDateTime fechaCreacion;

@@ -8,6 +8,7 @@ import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
 import ar.edu.uade.deremateapp.back.model.Usuario;
 import ar.edu.uade.deremateapp.back.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,7 +57,13 @@ public class EntregaController {
             @PathVariable Long id,
             @RequestParam EstadoEntrega nuevoEstado
     ) {
-        return ResponseEntity.ok(entregaService.actualizarEstado(id, nuevoEstado));
+        try {
+            var response = entregaService.actualizarEstado(id, nuevoEstado);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return new ResponseEntity(e, HttpStatus.BAD_REQUEST);
+        }
+
     }
 
    
