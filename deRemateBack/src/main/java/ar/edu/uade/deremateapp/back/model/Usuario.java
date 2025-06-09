@@ -38,7 +38,9 @@ public class Usuario {
                 .email(email)
                 .nombre(nombre)
                 .apellido(apellido)
-                .documento(documento).build();
+                .documento(documento)
+                .estado(estado.name())
+                .build();
     }
 
     public boolean estaActivo() {
