@@ -46,10 +46,25 @@ public class EntregaService {
         Entrega entrega = entregaRepository.findById(entregaId)
                 .orElseThrow(() -> new RuntimeException("Entrega no encontrada"));
 
+        EstadoEntrega estadoActual = entrega.getEstado();
+
+        // Validar transición de estado
+        if (!esTransicionValida(estadoActual, nuevoEstado)) {
+            throw new IllegalStateException("Transición de estado no permitida: " +
+                    estadoActual + " → " + nuevoEstado);
+        }
+
         entrega.setEstado(nuevoEstado);
+
+        // Si el estado es ENTREGADO, registrar la fecha de entrega
+        if (nuevoEstado == EstadoEntrega.ENTREGADO) {
+            entrega.setFechaEntrega(LocalDateTime.now());
+        }
+
         entrega = entregaRepository.save(entrega);
         return entrega.convertirADTO();
     }
+
 
     public EntregaDTO getEntregaPorId(Long entregaId) {
         Entrega entrega = entregaRepository.findById(entregaId)
@@ -63,6 +78,23 @@ public class EntregaService {
         List listaEstados = List.of(EstadoEntrega.CANCELADO, EstadoEntrega.ENTREGADO);
         return entregaRepository.findByUsuarioIdAndEstadoNotIn(usuarioId, listaEstados);
     }
+
+
+    private boolean esTransicionValida(EstadoEntrega estadoActual, EstadoEntrega nuevoEstado) {
+        // Si el nuevo estado es CANCELADO y el estado actual no es ENTREGADO
+        if (nuevoEstado == EstadoEntrega.CANCELADO && estadoActual != EstadoEntrega.ENTREGADO) {
+            return true;
+        }
+
+        // Verificar transiciones permitidas
+        return switch (estadoActual) {
+            case SIN_ASIGNAR -> nuevoEstado == EstadoEntrega.PENDIENTE;
+            case PENDIENTE -> nuevoEstado == EstadoEntrega.EN_VIAJE;
+            case EN_VIAJE -> nuevoEstado == EstadoEntrega.ENTREGADO;
+            default -> false;
+        };
+    }
+
 
 
 }
