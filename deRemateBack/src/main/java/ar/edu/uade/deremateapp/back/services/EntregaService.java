@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class EntregaService {
@@ -22,9 +21,8 @@ public class EntregaService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<Entrega> getEntregasPorUsuario(Long usuarioId) {
-        List<Entrega> entregas = entregaRepository.findByUsuarioId(usuarioId);
-        return entregas;
+    public List<Entrega> getEntregasPorUsuarioEnEstado(Long usuarioId, List<EstadoEntrega> estados) {
+        return entregaRepository.findByUsuarioIdAndEstadoIn(usuarioId, estados);
     }
 
     public EntregaDTO crearEntrega(EntregaDTO dto) {
@@ -73,13 +71,6 @@ public class EntregaService {
         return entrega.convertirADTO();
     }
 
-    public List<Entrega> getEntregasPendientes(Long usuarioId){
-
-        List listaEstados = List.of(EstadoEntrega.CANCELADO, EstadoEntrega.ENTREGADO);
-        return entregaRepository.findByUsuarioIdAndEstadoNotIn(usuarioId, listaEstados);
-    }
-
-
     private boolean esTransicionValida(EstadoEntrega estadoActual, EstadoEntrega nuevoEstado) {
         // Si el nuevo estado es CANCELADO y el estado actual no es ENTREGADO
         if (nuevoEstado == EstadoEntrega.CANCELADO && estadoActual != EstadoEntrega.ENTREGADO) {
@@ -94,7 +85,4 @@ public class EntregaService {
             default -> false;
         };
     }
-
-
-
 }
