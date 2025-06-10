@@ -12,7 +12,7 @@ INSERT INTO ENTREGA(ESTADO, FECHA_CREACION, FECHA_ENTREGA, USUARIO_ID, DIRECCION
     (2, '2025-04-20 14:23:45.123456', '2025-04-19 14:23:45.123456', 1, 'Lavalle 3201-3299, C1190AAK Cdad. Autónoma de Buenos Aires', 'jojoj jejeje');
 
 INSERT INTO ENTREGA(ESTADO, FECHA_CREACION, FECHA_ENTREGA, USUARIO_ID, DIRECCION_ENTREGA, OBSERVACIONES) VALUES
-    (3, '2025-04-21 10:15:30.000000', '2025-04-21 13:00:00.000000', 3, 'Av. Santa Fe 1860, C1123 Cdad. Autónoma de Buenos Aires', 'Entrega en horario de la tarde'),
-    (2, '2025-04-22 08:45:00.000000', '2025-04-22 09:30:00.000000', 4, 'Av. Rivadavia 6800, C1406 Cdad. Autónoma de Buenos Aires', 'Cliente solicita llamada previa'),
-    (3, '2025-04-23 12:00:00.000000', '2025-04-23 15:45:00.000000', 2, 'Av. Corrientes 3480, C1193 Cdad. Autónoma de Buenos Aires', 'Departamento 3B, timbre roto'),
+    (3, '2025-04-21 10:15:30.000000', '2025-04-21 13:00:00.000000', 1, 'Av. Santa Fe 1860, C1123 Cdad. Autónoma de Buenos Aires', 'Entrega en horario de la tarde'),
+    (2, '2025-04-22 08:45:00.000000', '2025-04-22 09:30:00.000000', 1, 'Av. Rivadavia 6800, C1406 Cdad. Autónoma de Buenos Aires', 'Cliente solicita llamada previa'),
+    (3, '2025-04-23 12:00:00.000000', '2025-04-23 15:45:00.000000', 1, 'Av. Corrientes 3480, C1193 Cdad. Autónoma de Buenos Aires', 'Departamento 3B, timbre roto'),
     (3, '2025-04-24 14:10:00.000000', '2025-04-24 16:00:00.000000', 1, 'Juramento 2089, C1428 Cdad. Autónoma de Buenos Aires', 'Entregar en portería');
