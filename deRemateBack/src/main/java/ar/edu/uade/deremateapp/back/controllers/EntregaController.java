@@ -1,8 +1,11 @@
 package ar.edu.uade.deremateapp.back.controllers;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ar.edu.uade.deremateapp.back.exceptions.InvalidEstadoEntregaException;
+import ar.edu.uade.deremateapp.back.exceptions.UsuarioAutenticadoNoEncontradoException;
 import ar.edu.uade.deremateapp.back.model.Entrega;
 import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
 import ar.edu.uade.deremateapp.back.model.Usuario;
@@ -35,10 +38,17 @@ public class EntregaController {
 
     
     @GetMapping("/mis-entregas")
-    public ResponseEntity<List<EntregaDTO>> getMisEntregas() {
+    public ResponseEntity<List<EntregaDTO>> getMisEntregas(@RequestParam List<String> estados) throws UsuarioAutenticadoNoEncontradoException {
         Usuario user = SecurityUtils.getCurrentUser();
 
-        var entregas = entregaService.getEntregasPorUsuario(user.getId());
+        List<EstadoEntrega> estadosEntrega = estados.stream().map(this::getEstadoEntrega).collect(Collectors.toList());
+
+        // Si la lista de estados viene vacia, se usan todos los estados
+        if (estadosEntrega.isEmpty()) {
+            estadosEntrega = Arrays.asList(EstadoEntrega.values());
+        }
+
+        var entregas = entregaService.getEntregasPorUsuarioEnEstado(user.getId(), estadosEntrega);
 
         var entregasDto = entregas.stream().map(Entrega::convertirADTO)
                 .collect(Collectors.toList());
@@ -53,7 +63,7 @@ public class EntregaController {
 
     
     @PutMapping("/{id}/estado")
-    public ResponseEntity<EntregaDTO> actualizarEstado(
+    public ResponseEntity<?> actualizarEstado(
             @PathVariable Long id,
             @RequestParam EstadoEntrega nuevoEstado
     ) {
@@ -72,15 +82,12 @@ public class EntregaController {
         return ResponseEntity.ok(entregaService.getEntregaPorId(id));
     }
 
-    @GetMapping("/pendientes")
-    public ResponseEntity<List<EntregaDTO>> getEntregasPendientes() {
-        var usu = SecurityUtils.getCurrentUser();
-        var entregas = entregaService.getEntregasPendientes(usu.getId());
+    private EstadoEntrega getEstadoEntrega(String value) throws InvalidEstadoEntregaException {
+        try {
+            return EstadoEntrega.valueOf(value);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidEstadoEntregaException(value);
+        }
 
-        var entregasDto = entregas.stream().map(Entrega::convertirADTO)
-                .collect(Collectors.toList());
-
-
-        return ResponseEntity.ok(entregasDto);
     }
 }
