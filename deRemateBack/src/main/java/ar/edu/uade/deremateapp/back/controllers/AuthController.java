@@ -53,7 +53,7 @@ public class AuthController {
     }
 
     @PostMapping("/registro")
-    public ResponseEntity<UsuarioDTO> guardarPersona(@Valid @RequestBody UsuarioDTO user) throws CamposVaciosException, MailAlreadyUsedException {
+    public ResponseEntity<UsuarioDTO> guardarPersona(@Valid @RequestBody UsuarioDTO user) throws CamposVaciosException, MailAlreadyUsedException, UsernameAlreadyUsedException, DocumentAlreadyUsedException {
         // Verifica si algún campo está vacío o contiene solo espacios en blanco
         if (user.getNombre().trim().isEmpty() || user.getApellido().trim().isEmpty() || user.getEmail().trim().isEmpty() || user.getPassword().trim().isEmpty() || user.getUsername().trim().isEmpty()) {
             throw new CamposVaciosException("No se pueden dejar espacios vacíos");
@@ -70,6 +70,27 @@ public class AuthController {
                 usuario = optUsuarioPorMail.get();
             }
         }
+
+        var optUsuarioPorUsername = userService.buscarUsuarioPorUsername(user.getUsername());
+        if (optUsuarioPorUsername.isPresent()) {
+            if(optUsuarioPorUsername.get().estaActivo()) {
+                throw new UsernameAlreadyUsedException();
+            }
+            else {
+                usuario = optUsuarioPorUsername.get();
+            }
+        }
+
+        var optUsuarioPorDocumento = userService.buscarUsuarioPorDNI(user.getDocumento());
+        if (optUsuarioPorDocumento.isPresent()) {
+            if(optUsuarioPorDocumento.get().estaActivo()) {
+                throw new DocumentAlreadyUsedException();
+            }
+            else{
+                usuario = optUsuarioPorDocumento.get();
+            }
+        }
+
 
         Usuario nuevaPersona = authService.registrarPersona(usuario);
 

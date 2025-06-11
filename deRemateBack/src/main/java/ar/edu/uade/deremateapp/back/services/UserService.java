@@ -31,4 +31,12 @@ public class UserService
         usuario.setEstado(EstadoUsuario.ACTIVO);
         userRepository.save(usuario);
     }
+
+    public Optional<Usuario> buscarUsuarioPorUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public Optional<Usuario> buscarUsuarioPorDNI(int documento) {
+        return userRepository.findByDocumento(documento);
+    }
 }
