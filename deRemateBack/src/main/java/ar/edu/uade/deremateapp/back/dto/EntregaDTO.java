@@ -18,7 +18,8 @@ public class EntregaDTO {
     private String observaciones;
     private Long usuarioId;
 
-    private int calificacion;
     private String comentario;
+    private Integer calificacion;
+
 
 }

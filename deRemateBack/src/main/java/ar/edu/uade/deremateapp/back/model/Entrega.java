@@ -34,8 +34,8 @@ public class Entrega {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @Column(nullable = false)
-    private int calificacion;
+    @Column(nullable = true)
+    private Integer calificacion;
 
     private String comentario;
 
@@ -52,6 +52,7 @@ public class Entrega {
 
         dto.setCalificacion(this.getCalificacion());
         dto.setComentario(this.getComentario());
+
 
         return dto;
     }

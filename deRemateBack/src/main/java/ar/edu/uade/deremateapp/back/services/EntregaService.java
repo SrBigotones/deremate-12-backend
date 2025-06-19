@@ -31,18 +31,27 @@ public class EntregaService {
 
         Entrega entrega = new Entrega();
         entrega.setDireccionEntrega(dto.getDireccion());
+
+        // Por defecto, las nuevas entregas son PENDIENTES (esto está bien)
         entrega.setEstado(EstadoEntrega.PENDIENTE);
         entrega.setFechaCreacion(LocalDateTime.now());
         entrega.setObservaciones(dto.getObservaciones());
         entrega.setUsuario(usuario);
 
-        //calificación obligatoria y comentario opcional
+        //Validar que solo pueda calificar si está ENTREGADO
+        if (dto.getCalificacion() != null || dto.getComentario() != null) {
+            if (dto.getEstado() != EstadoEntrega.ENTREGADO) {
+                throw new IllegalStateException("Solo se puede asignar calificación y comentario si la entrega está ENTREGADA.");
+            }
+        }
+
         entrega.setCalificacion(dto.getCalificacion());
         entrega.setComentario(dto.getComentario());
 
         Entrega guardada = entregaRepository.save(entrega);
         return guardada.convertirADTO();
     }
+
 
 
     public EntregaDTO actualizarEstado(Long entregaId, EstadoEntrega nuevoEstado) {
