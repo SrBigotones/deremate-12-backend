@@ -13,4 +13,5 @@ public interface EntregaRepository extends JpaRepository<Entrega, Long> {
     List<Entrega> findByEstado(EstadoEntrega estado);
     List<Entrega> findByUsuarioIdAndEstadoNotIn(Long usuarioId, List<EstadoEntrega> estados);
     List<Entrega> findByUsuarioIdAndEstadoIn(Long usuarioId, List<EstadoEntrega> estados);
+
 }

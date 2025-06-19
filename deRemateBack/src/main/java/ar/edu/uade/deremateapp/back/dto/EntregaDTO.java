@@ -17,4 +17,8 @@ public class EntregaDTO {
     private LocalDateTime fechaCreacion;
     private String observaciones;
     private Long usuarioId;
+
+    private int calificacion;
+    private String comentario;
+
 }

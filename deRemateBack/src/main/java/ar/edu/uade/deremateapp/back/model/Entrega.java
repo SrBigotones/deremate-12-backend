@@ -34,6 +34,10 @@ public class Entrega {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
+    @Column(nullable = false)
+    private int calificacion;
+
+    private String comentario;
 
     public EntregaDTO convertirADTO() {
         EntregaDTO dto = new EntregaDTO();
@@ -45,6 +49,11 @@ public class Entrega {
         dto.setFechaEntrega(this.getFechaEntrega());
         dto.setObservaciones(this.getObservaciones());
         dto.setUsuarioId(this.getUsuario().getId());
+
+        dto.setCalificacion(this.getCalificacion());
+        dto.setComentario(this.getComentario());
+
         return dto;
     }
 }
+

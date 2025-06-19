@@ -36,9 +36,14 @@ public class EntregaService {
         entrega.setObservaciones(dto.getObservaciones());
         entrega.setUsuario(usuario);
 
+        //calificación obligatoria y comentario opcional
+        entrega.setCalificacion(dto.getCalificacion());
+        entrega.setComentario(dto.getComentario());
+
         Entrega guardada = entregaRepository.save(entrega);
         return guardada.convertirADTO();
     }
+
 
     public EntregaDTO actualizarEstado(Long entregaId, EstadoEntrega nuevoEstado) {
         Entrega entrega = entregaRepository.findById(entregaId)
