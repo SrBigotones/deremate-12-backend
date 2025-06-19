@@ -30,10 +30,23 @@ public class EmailService {
     @Value("${email.from}")
     private String emailFrom;
 
+    @Value("${mail.service.enabled}")
+    private boolean mailServiceEnabled;
+
     @Autowired
     private JavaMailSender emailSender;
 
     private void enviarMail(String to, String subject, String htmlContent) {
+        if (!mailServiceEnabled) {
+            // Si el servicio de mail no está habilitado, no se envía el correo.
+            System.out.println("--------------------------------------------------");
+            System.out.println("El servicio de correo electrónico está deshabilitado. No se enviará el correo a: " + to);
+            System.out.println("Asunto: " + subject);
+            System.out.println("Contenido HTML: " + htmlContent);
+            System.out.println("--------------------------------------------------");
+            return;
+        }
+        
         MimeMessage mensaje = emailSender.createMimeMessage();
 
         MimeMessageHelper helper = null;
