@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import jakarta.persistence.Column;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -36,8 +36,11 @@ public class Entrega {
 
     @Column(nullable = true)
     private Integer calificacion;
-
     private String comentario;
+
+    @Column(name = "imagen")
+    private String imagen;
+
 
     public EntregaDTO convertirADTO() {
         EntregaDTO dto = new EntregaDTO();
@@ -52,7 +55,7 @@ public class Entrega {
 
         dto.setCalificacion(this.getCalificacion());
         dto.setComentario(this.getComentario());
-
+        dto.setImagen(this.getImagen());
 
         return dto;
     }

@@ -38,12 +38,13 @@ public class EntregaService {
         entrega.setObservaciones(dto.getObservaciones());
         entrega.setUsuario(usuario);
 
-        //Validar que solo pueda calificar si está ENTREGADO
-        if (dto.getCalificacion() != null || dto.getComentario() != null) {
+        // Validar que solo pueda calificar, comentar o subir imagen si está ENTREGADO
+        if (dto.getCalificacion() != null || dto.getComentario() != null || dto.getImagen() != null) {
             if (dto.getEstado() != EstadoEntrega.ENTREGADO) {
-                throw new IllegalStateException("Solo se puede asignar calificación y comentario si la entrega está ENTREGADA.");
+                throw new IllegalStateException("Solo se puede asignar calificación, comentario o imagen si la entrega está ENTREGADA.");
             }
         }
+
 
         entrega.setCalificacion(dto.getCalificacion());
         entrega.setComentario(dto.getComentario());
