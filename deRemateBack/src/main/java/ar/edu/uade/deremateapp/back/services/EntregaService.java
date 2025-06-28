@@ -21,34 +21,31 @@ public class EntregaService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PushTokenService pushTokenService;
+
     public List<Entrega> getEntregasPorUsuarioEnEstado(Long usuarioId, List<EstadoEntrega> estados) {
         return entregaRepository.findByUsuarioIdAndEstadoIn(usuarioId, estados);
     }
 
-    public EntregaDTO crearEntrega(EntregaDTO dto) {
+    public EntregaDTO crearEntrega(EntregaDTO dto) throws Exception {
         Usuario usuario = userRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Entrega entrega = new Entrega();
         entrega.setDireccionEntrega(dto.getDireccion());
 
-        // Por defecto, las nuevas entregas son PENDIENTES (esto está bien)
         entrega.setEstado(EstadoEntrega.PENDIENTE);
         entrega.setFechaCreacion(LocalDateTime.now());
         entrega.setObservaciones(dto.getObservaciones());
         entrega.setUsuario(usuario);
-
-        //Validar que solo pueda calificar si está ENTREGADO
-        if (dto.getCalificacion() != null || dto.getComentario() != null) {
-            if (dto.getEstado() != EstadoEntrega.ENTREGADO) {
-                throw new IllegalStateException("Solo se puede asignar calificación y comentario si la entrega está ENTREGADA.");
-            }
-        }
-
-        entrega.setCalificacion(dto.getCalificacion());
-        entrega.setComentario(dto.getComentario());
+        entrega.setCalificacion(0);
+        entrega.setComentario("");
 
         Entrega guardada = entregaRepository.save(entrega);
+
+        pushTokenService.sendNotification(usuario.getId(), "Nueva entrega", "Se te ha asignado una nueva entrega");
+
         return guardada.convertirADTO();
     }
 
@@ -77,6 +74,21 @@ public class EntregaService {
         return entrega.convertirADTO();
     }
 
+    public void actualizarCalificacion(EntregaDTO dto) throws Exception {
+        Entrega entrega = entregaRepository.findById(dto.getId())
+                .orElseThrow(() -> new RuntimeException("Entrega no encontrada"));
+
+        if (entrega.getEstado() != EstadoEntrega.ENTREGADO) {
+            throw new Exception("error: solo se pueden calificar entregas con el estado ENTREGADO");
+        }
+
+        entrega.setCalificacion(dto.getCalificacion());
+        entrega.setComentario(dto.getComentario());
+
+        entregaRepository.save(entrega);
+        pushTokenService.sendNotification(entrega.getUsuario().getId(), "Nueva calificacion", "Te han calificado en una entrega");
+    }
+
 
     public EntregaDTO getEntregaPorId(Long entregaId) {
         Entrega entrega = entregaRepository.findById(entregaId)
@@ -93,7 +105,6 @@ public class EntregaService {
 
         // Verificar transiciones permitidas
         return switch (estadoActual) {
-            case SIN_ASIGNAR -> nuevoEstado == EstadoEntrega.PENDIENTE;
             case PENDIENTE -> nuevoEstado == EstadoEntrega.EN_VIAJE;
             case EN_VIAJE -> nuevoEstado == EstadoEntrega.ENTREGADO;
             default -> false;
