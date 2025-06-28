@@ -57,7 +57,7 @@ public class EntregaController {
 
     
     @PostMapping
-    public ResponseEntity<EntregaDTO> crearEntrega(@RequestBody EntregaDTO entregaDto) {
+    public ResponseEntity<EntregaDTO> crearEntrega(@RequestBody EntregaDTO entregaDto) throws Exception {
         return ResponseEntity.ok(entregaService.crearEntrega(entregaDto));
     }
 
@@ -74,6 +74,13 @@ public class EntregaController {
             return new ResponseEntity(e, HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @PostMapping("/{id}/calificar")
+    public ResponseEntity<?> actualizarCalificacion(@PathVariable Long id, @RequestBody EntregaDTO entregaDto) throws Exception {
+        entregaDto.setId(id);
+        entregaService.actualizarCalificacion(entregaDto);
+        return ResponseEntity.ok("Calificado con exito");
     }
 
    
