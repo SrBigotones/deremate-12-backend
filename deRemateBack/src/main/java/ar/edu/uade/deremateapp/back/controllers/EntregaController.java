@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.edu.uade.deremateapp.back.dto.EntregaDTO;
+import ar.edu.uade.deremateapp.back.dto.QRScanRequest;
 import ar.edu.uade.deremateapp.back.services.EntregaService;
 import ar.edu.uade.deremateapp.back.services.UserService;
+import ar.edu.uade.deremateapp.back.services.QRService;
 
 @RestController
 @RequestMapping("/api/entregas")
@@ -35,6 +37,9 @@ public class EntregaController {
 
     @Autowired
     private UserService usuarioService;
+
+    @Autowired
+    private QRService qrService;
 
     
     @GetMapping("/mis-entregas")
@@ -87,6 +92,22 @@ public class EntregaController {
     @GetMapping("/{id}")
     public ResponseEntity<EntregaDTO> getEntregaPorId(@PathVariable Long id) {
         return ResponseEntity.ok(entregaService.getEntregaPorId(id));
+    }
+
+    /**
+     * Endpoint para escanear QR y cambiar estado de entrega
+     * @param request Solicitud con el contenido del QR
+     * @return ResponseEntity con el resultado
+     */
+    @PostMapping("/escanear-qr")
+    public ResponseEntity<?> escanearQR(@RequestBody QRScanRequest request) {
+        boolean procesado = qrService.procesarEscaneoQR(request.getContenidoQR());
+        
+        if (procesado) {
+            return ResponseEntity.ok("Entrega actualizada correctamente a estado EN_VIAJE");
+        } else {
+            return ResponseEntity.badRequest().body("Error al procesar el QR. Verifique que la entrega esté en estado PENDIENTE");
+        }
     }
 
     private EstadoEntrega getEstadoEntrega(String value) throws InvalidEstadoEntregaException {
