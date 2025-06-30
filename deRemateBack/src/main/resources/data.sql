@@ -12,4 +12,5 @@ INSERT INTO ENTREGA (ESTADO, FECHA_CREACION, FECHA_ENTREGA, USUARIO_ID, DIRECCIO
 (2, '2025-04-21 10:15:30.000000', '2025-04-21 13:00:00.000000', 1, 'Av. Santa Fe 1860, C1123 Cdad. Autónoma de Buenos Aires', 'Entrega en horario de la tarde', 'Excelente servicio, llegó puntual.', 5),
 (1, '2025-04-22 08:45:00.000000', null, 1, 'Av. Rivadavia 6800, C1406 Cdad. Autónoma de Buenos Aires', 'Cliente solicita llamada previa', null, null),
 (2, '2025-04-23 12:00:00.000000', '2025-04-23 15:45:00.000000', 1, 'Av. Corrientes 3480, C1193 Cdad. Autónoma de Buenos Aires', 'Departamento 3B, timbre roto', 'Tuve que bajar a abrir, pero el chico fue cordial.', 4),
-(2, '2025-04-24 14:10:00.000000', '2025-04-24 16:00:00.000000', 1, 'Juramento 2089, C1428 Cdad. Autónoma de Buenos Aires', 'Entregar en portería', 'Perfecto, dejaron en portería como pedí.', 5);
+(2, '2025-04-24 14:10:00.000000', '2025-04-24 16:00:00.000000', 1, 'Juramento 2089, C1428 Cdad. Autónoma de Buenos Aires', 'Entregar en portería', 'Perfecto, dejaron en portería como pedí.', 5),
+(0, '2025-04-19 14:23:45.123456', null, 1, 'Lima 757, C1073 Cdad. Autónoma de Buenos Aires', 'Test creacion', null, null);
