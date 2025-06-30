@@ -1,5 +1,6 @@
 package ar.edu.uade.deremateapp.back.services;
 
+import ar.edu.uade.deremateapp.back.exceptions.CodigoQRInvalidoException;
 import ar.edu.uade.deremateapp.back.model.Entrega;
 import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
 import ar.edu.uade.deremateapp.back.repository.EntregaRepository;
@@ -25,9 +26,6 @@ public class QRService {
     @Autowired
     private EntregaRepository entregaRepository;
 
-    @Autowired
-    private EntregaService entregaService;
-
     /**
      * Genera un QR para una entrega específica
      * @param entregaId ID de la entrega
@@ -47,34 +45,17 @@ public class QRService {
     }
 
     /**
-     * Procesa el escaneo de un QR y cambia el estado de la entrega
+     * Procesa el escaneo de un QR
      * @param contenidoQR Contenido del QR escaneado
-     * @return true si se procesó correctamente, false en caso contrario
+     * @return devuelve el id de entrega
      */
-    public boolean procesarEscaneoQR(String contenidoQR) {
-        try {
-            // El contenido del QR debe tener el formato "ENTREGA_ID"
-            if (!contenidoQR.startsWith("ENTREGA_")) {
-                return false;
-            }
-            
-            Long entregaId = Long.parseLong(contenidoQR.substring(8));
-            Optional<Entrega> entregaOpt = entregaRepository.findById(entregaId);
-            
-            if (entregaOpt.isPresent()) {
-                Entrega entrega = entregaOpt.get();
-                
-                // Solo cambiar estado si está PENDIENTE
-                if (entrega.getEstado() == EstadoEntrega.PENDIENTE) {
-                    entregaService.actualizarEstado(entregaId, EstadoEntrega.EN_VIAJE);
-                    return true;
-                }
-            }
-            
-            return false;
-        } catch (Exception e) {
-            return false;
+    public Long procesarEscaneoQR(String contenidoQR) throws CodigoQRInvalidoException {
+        // El contenido del QR debe tener el formato "ENTREGA_ID"
+        if (!contenidoQR.startsWith("ENTREGA_")) {
+            throw new CodigoQRInvalidoException();
         }
+
+        return Long.parseLong(contenidoQR.substring(8));
     }
 
     /**

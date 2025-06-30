@@ -6,9 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -29,6 +27,9 @@ public class Entrega {
     private EstadoEntrega estado;
 
     private String observaciones;
+
+    @Column(nullable = false)
+    private String emailCliente;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
