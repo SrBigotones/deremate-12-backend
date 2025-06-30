@@ -1,12 +1,11 @@
 package ar.edu.uade.deremateapp.back.services;
 
+import ar.edu.uade.deremateapp.back.model.Entrega;
 import ar.edu.uade.deremateapp.back.model.Usuario;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -23,9 +22,13 @@ public class EmailService {
     private String emailConfirmationBodyTemplate;
     @Value("${email.password.recovery.body.template}")
     private String emailPasswordRecoveryTemplate;
+    @Value("${email.delivery.notification.body.template}")
+    private String emailClienteEntregaTemplate;
 
     @Value("${email.confirmation.subject}")
     private String emailConfirmationSubject;
+    @Value("${email.entrega.cliente.subject}")
+    private String emailEntregaClientSubject;
 
     @Value("${email.from}")
     private String emailFrom;
@@ -78,6 +81,14 @@ public class EmailService {
                 "codigo", codigoConfirmacion);
 
         enviarMail(usuario.getEmail(), emailConfirmationSubject, completarEmailTemplate(emailPasswordRecoveryTemplate, params));
+    }
+
+    public void enviarMensajeCodigoConfirmacion(Entrega entrega, String codigoConfirmacion) {
+        var params = Map.of("emailCliente", entrega.getEmailCliente(),
+                "direccionEntrega", entrega.getDireccionEntrega(),
+                "codigoEntrega", codigoConfirmacion);
+
+        enviarMail(entrega.getEmailCliente(), emailEntregaClientSubject, completarEmailTemplate(emailClienteEntregaTemplate, params));
     }
 
     private String completarEmailTemplate(String template, Map<String, String> params) {
