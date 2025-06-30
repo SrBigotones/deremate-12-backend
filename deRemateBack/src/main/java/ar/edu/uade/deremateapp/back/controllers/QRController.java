@@ -19,24 +19,6 @@ public class QRController {
     private QRService qrService;
 
     /**
-     * Endpoint para procesar el escaneo de un QR desde el frontend
-     * @param request Solicitud con el contenido del QR escaneado
-     * @return ResponseEntity con el resultado del procesamiento
-    Deprecado, se usa en EntregaController
-    @PostMapping("/escanear")
-    @ResponseBody
-    public ResponseEntity<?> escanearQR(@RequestBody QRScanRequest request) {
-        boolean procesado = qrService.procesarEscaneoQR(request.getContenidoQR());
-
-        if (procesado) {
-            return ResponseEntity.ok("QR procesado correctamente. Estado de entrega actualizado a EN_VIAJE");
-        } else {
-            return ResponseEntity.badRequest().body("Error al procesar el QR. Verifique que la entrega esté en estado PENDIENTE");
-        }
-    }
-     */
-
-    /**
      * Interfaz web para generar QRs de entregas pendientes
      * @param model Modelo de Thymeleaf
      * @return Vista con los QRs
