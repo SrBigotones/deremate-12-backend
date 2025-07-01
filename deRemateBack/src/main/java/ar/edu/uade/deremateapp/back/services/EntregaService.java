@@ -1,12 +1,10 @@
 package ar.edu.uade.deremateapp.back.services;
 
 import ar.edu.uade.deremateapp.back.dto.EntregaDTO;
-import ar.edu.uade.deremateapp.back.exceptions.CodigoConfirmacionEntregaInvalido;
-import ar.edu.uade.deremateapp.back.exceptions.CodigoConfirmacionEntregaNotFoundException;
-import ar.edu.uade.deremateapp.back.exceptions.CodigoQRInvalidoException;
-import ar.edu.uade.deremateapp.back.exceptions.EntregaNotFoundException;
+import ar.edu.uade.deremateapp.back.exceptions.*;
 import ar.edu.uade.deremateapp.back.model.CodigoConfirmacionEntrega;
 import ar.edu.uade.deremateapp.back.model.Entrega;
+import ar.edu.uade.deremateapp.back.util.SecurityUtils;
 import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
 import ar.edu.uade.deremateapp.back.model.Usuario;
 import ar.edu.uade.deremateapp.back.repository.CodigoConfirmacionEntregaRepository;
@@ -16,6 +14,7 @@ import ar.edu.uade.deremateapp.back.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.MethodNotAllowedException;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -67,7 +66,7 @@ public class EntregaService {
         return guardada.convertirADTO();
     }
 
-    public void transicionarAEnViaje(String codigoQR) throws EntregaNotFoundException, CodigoQRInvalidoException {
+    public void transicionarAEnViaje(String codigoQR) throws EntregaNotFoundException, CodigoQRInvalidoException, UsuarioAutenticadoNoEncontradoException {
         Long entregaId = procesarEscaneoQR(codigoQR);
 
         Optional<Entrega> entregaOpt = entregaRepository.findById(entregaId);
@@ -85,6 +84,13 @@ public class EntregaService {
                     estadoActual + " → " + EstadoEntrega.CANCELADO);
         }
 
+        Usuario usuario = SecurityUtils.getCurrentUser();
+
+        if (entrega.getUsuario().getId() != usuario.getId()) {
+            throw new UsuarioNoPermitidoException();
+        }
+
+
         String codigo = SecurityUtils.createRandomDigits();
         guardarCodigoConfirmacion(entrega, codigo);
 
@@ -94,11 +100,7 @@ public class EntregaService {
         entregaRepository.save(entrega);
     }
 
-    /**
-     * Procesa el escaneo de un QR
-     * @param contenidoQR Contenido del QR escaneado
-     * @return devuelve el id de entrega
-     */
+
     private Long procesarEscaneoQR(String contenidoQR) throws CodigoQRInvalidoException {
         // El contenido del QR debe tener el formato "ENTREGA_ID"
         if (!contenidoQR.startsWith("ENTREGA_")) {
