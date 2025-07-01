@@ -58,8 +58,9 @@ public class EntregaService {
         entrega.setEmailCliente(dto.getEmailCliente());
         entrega.setCalificacion(0);
         entrega.setComentario("");
+        entrega.setImagen("");
 
-        Entrega guardada = entregaRepository.save(entrega);
+        var guardada = entregaRepository.save(entrega);
 
         pushTokenService.sendNotification(usuario.getId(), "Nueva entrega", "Se te ha asignado una nueva entrega");
 

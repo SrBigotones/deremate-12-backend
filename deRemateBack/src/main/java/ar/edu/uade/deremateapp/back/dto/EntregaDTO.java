@@ -21,6 +21,7 @@ public class EntregaDTO {
 
     private String comentario;
     private Integer calificacion;
+    private String imagen;
+    }
 
 
-}
