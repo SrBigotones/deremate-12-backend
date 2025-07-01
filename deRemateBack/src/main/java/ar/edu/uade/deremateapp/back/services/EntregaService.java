@@ -80,8 +80,8 @@ public class EntregaService {
 
         // Solo cambiar estado si está PENDIENTE
         if (!EstadoEntrega.PENDIENTE.equals(estadoActual)) {
-            throw new IllegalStateException("Transición de estado no permitida: " +
-                    estadoActual + " → " + EstadoEntrega.CANCELADO);
+            throw new IllegalStateException("Transición de estado no permitida, la entrega se encuentra: " +
+                    estadoActual);
         }
 
         Usuario usuario = SecurityUtils.getCurrentUser();
@@ -89,6 +89,7 @@ public class EntregaService {
         if (entrega.getUsuario().getId() != usuario.getId()) {
             throw new UsuarioNoPermitidoException();
         }
+
 
 
         String codigo = SecurityUtils.createRandomDigits();

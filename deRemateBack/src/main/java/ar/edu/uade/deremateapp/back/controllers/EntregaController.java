@@ -108,8 +108,9 @@ public class EntregaController {
 
             return ResponseEntity.ok("Entrega actualizada correctamente a estado EN_VIAJE");
         } catch (EntregaNotFoundException | IllegalStateException | CodigoQRInvalidoException |
-                 UsuarioAutenticadoNoEncontradoException e) {
-            return ResponseEntity.badRequest().body("Error al procesar el QR. Verifique que la entrega esté en estado PENDIENTE");
+                 UsuarioNoPermitidoException | UsuarioAutenticadoNoEncontradoException e) {
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+            //return ResponseEntity.badRequest().body("Error al procesar el QR. Verifique que la entrega esté en estado PENDIENTE");
         }
     }
 
