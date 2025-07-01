@@ -1,5 +1,6 @@
 package ar.edu.uade.deremateapp.back.services;
 
+import ar.edu.uade.deremateapp.back.dto.EntregaConQRDTO;
 import ar.edu.uade.deremateapp.back.exceptions.CodigoQRInvalidoException;
 import ar.edu.uade.deremateapp.back.model.Entrega;
 import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
@@ -24,7 +25,7 @@ import java.util.Optional;
 public class QRService {
 
     @Autowired
-    private EntregaRepository entregaRepository;
+    private EntregaService entregaService;
 
     /**
      * Genera un QR para una entrega específica
@@ -44,34 +45,47 @@ public class QRService {
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
-    /**
-     * Procesa el escaneo de un QR
-     * @param contenidoQR Contenido del QR escaneado
-     * @return devuelve el id de entrega
-     */
-    public Long procesarEscaneoQR(String contenidoQR) throws CodigoQRInvalidoException {
-        // El contenido del QR debe tener el formato "ENTREGA_ID"
-        if (!contenidoQR.startsWith("ENTREGA_")) {
-            throw new CodigoQRInvalidoException();
-        }
-
-        return Long.parseLong(contenidoQR.substring(8));
-    }
 
     /**
      * Obtiene todas las entregas en estado PENDIENTE
      * @return Lista de entregas pendientes
      */
     public List<Entrega> getEntregasPendientes() {
-        return entregaRepository.findByEstado(EstadoEntrega.PENDIENTE);
+        return entregaService.getEntregasPendientes();
     }
 
     /**
      * Obtiene una entrega por ID
+     *
      * @param entregaId ID de la entrega
      * @return Optional con la entrega si existe
+     *
+     * public Optional<Entrega> getEntregaPorId(Long entregaId) {
+     *         return entregaRepository.findById(entregaId);
+     *     }
      */
-    public Optional<Entrega> getEntregaPorId(Long entregaId) {
-        return entregaRepository.findById(entregaId);
+
+
+    /**
+     * Obtiene todas las entregas pendientes con sus QRs generados
+     * @return Lista de entregas pendientes con QRs en Base64
+     */
+    public List<EntregaConQRDTO> getEntregasPendientesConQRs() {
+        List<Entrega> entregasPendientes = getEntregasPendientes();
+        List<EntregaConQRDTO> entregasConQR = new java.util.ArrayList<>();
+        
+        for (Entrega entrega : entregasPendientes) {
+            try {
+                String qrBase64 = generarQRParaEntrega(entrega.getId());
+                EntregaConQRDTO dto = EntregaConQRDTO.fromEntrega(entrega);
+                dto.setQrBase64(qrBase64);
+                entregasConQR.add(dto);
+            } catch (Exception e) {
+                // Si hay error generando el QR, continuamos con las demás entregas
+                System.err.println("Error generando QR para entrega " + entrega.getId() + ": " + e.getMessage());
+            }
+        }
+        
+        return entregasConQR;
     }
 } 

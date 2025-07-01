@@ -185,12 +185,27 @@
     </div>
 
     <script th:inline="javascript">
-        // Datos de las entregas desde el servidor
-        const entregas = /*[[${entregas}]]*/ [];
+        // Datos iniciales de las entregas desde el servidor
+        let entregas = /*[[${entregas}]]*/ [];
         
-        function cargarQRs() {
+        async function cargarEntregasPendientes() {
+            try {
+                const response = await fetch('/qr/entregas-pendientes');
+                if (response.ok) {
+                    entregas = await response.json();
+                    return true;
+                } else {
+                    console.error('Error obteniendo entregas pendientes');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error en la petición:', error);
+                return false;
+            }
+        }
+        
+        function mostrarQRs() {
             const container = document.getElementById('qr-container');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando QRs...</p></div>';
             
             if (entregas.length === 0) {
                 container.innerHTML = `
@@ -226,22 +241,24 @@
             container.innerHTML = html;
         }
         
+        async function cargarQRs() {
+            const container = document.getElementById('qr-container');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando QRs...</p></div>';
+            
+            // Obtener entregas pendientes con QRs ya generados
+            const success = await cargarEntregasPendientes();
+            if (!success) {
+                container.innerHTML = '<div class="no-entregas"><h2>❌ Error al cargar entregas</h2><p>No se pudieron obtener las entregas pendientes.</p></div>';
+                return;
+            }
+            
+            // Mostrar los QRs (ya vienen con QR generado del servidor)
+            mostrarQRs();
+        }
+        
         // Cargar QRs al iniciar la página
         document.addEventListener('DOMContentLoaded', function() {
-            // Generar QRs para cada entrega
-            Promise.all(entregas.map(async (entrega) => {
-                try {
-                    const response = await fetch(`/qr/generar/${entrega.id}`);
-                    if (response.ok) {
-                        entrega.qrBase64 = await response.text();
-                    }
-                } catch (error) {
-                    console.error('Error generando QR para entrega', entrega.id, error);
-                }
-                return entrega;
-            })).then(() => {
-                cargarQRs();
-            });
+            cargarQRs();
         });
     </script>
 </body>
