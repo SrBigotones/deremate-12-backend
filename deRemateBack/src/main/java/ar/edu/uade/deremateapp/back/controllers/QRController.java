@@ -31,35 +31,6 @@ public class QRController {
     }
 
     /**
-     * Genera un QR específico para una entrega
-     * @param entregaId ID de la entrega
-     * @return ResponseEntity con el QR en Base64
-     */
-    @GetMapping("/generar/{entregaId}")
-    @ResponseBody
-    public ResponseEntity<?> generarQRParaEntrega(@PathVariable Long entregaId) {
-        try {
-            String qrBase64 = qrService.generarQRParaEntrega(entregaId);
-            return ResponseEntity.ok(qrBase64);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al generar el QR: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Obtiene información de una entrega específica
-     * @param entregaId ID de la entrega
-     * @return ResponseEntity con la información de la entrega
-     */
-    @GetMapping("/entrega/{entregaId}")
-    @ResponseBody
-    public ResponseEntity<?> getEntregaInfo(@PathVariable Long entregaId) {
-        return qrService.getEntregaPorId(entregaId)
-                .map(entrega -> ResponseEntity.ok(entrega))
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    /**
      * Obtiene las entregas pendientes como JSON para actualización dinámica
      * @return ResponseEntity con la lista de entregas pendientes con QRs
      */

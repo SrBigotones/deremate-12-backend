@@ -35,9 +35,6 @@ public class EntregaService {
     private PushTokenService pushTokenService;
 
     @Autowired
-    private QRService qrService;
-
-    @Autowired
     private EmailService emailService;
 
     @Autowired
@@ -69,7 +66,7 @@ public class EntregaService {
     }
 
     public void transicionarAEnViaje(String codigoQR) throws EntregaNotFoundException, CodigoQRInvalidoException {
-        Long entregaId = qrService.procesarEscaneoQR(codigoQR);
+        Long entregaId = procesarEscaneoQR(codigoQR);
 
         Optional<Entrega> entregaOpt = entregaRepository.findById(entregaId);
 
@@ -93,6 +90,20 @@ public class EntregaService {
 
         entrega.setEstado(EstadoEntrega.EN_VIAJE);
         entregaRepository.save(entrega);
+    }
+
+    /**
+     * Procesa el escaneo de un QR
+     * @param contenidoQR Contenido del QR escaneado
+     * @return devuelve el id de entrega
+     */
+    private Long procesarEscaneoQR(String contenidoQR) throws CodigoQRInvalidoException {
+        // El contenido del QR debe tener el formato "ENTREGA_ID"
+        if (!contenidoQR.startsWith("ENTREGA_")) {
+            throw new CodigoQRInvalidoException();
+        }
+
+        return Long.parseLong(contenidoQR.substring(8));
     }
 
     public EntregaDTO cancelar(Long entregaId) {
@@ -159,6 +170,9 @@ public class EntregaService {
         return entrega.convertirADTO();
     }
 
+
+
+
     private boolean esTransicionValida(EstadoEntrega estadoActual, EstadoEntrega nuevoEstado) {
         // Verificar transiciones permitidas
         return switch (estadoActual) {
@@ -190,4 +204,13 @@ public class EntregaService {
 
         codigoConfirmacionEntregaRepository.save(nuevoCodigo);
     }
+
+
+    public List<Entrega> getEntregasPendientes() {
+        return entregaRepository.findByEstado(EstadoEntrega.PENDIENTE);
+    }
+
+
+
+
 }
