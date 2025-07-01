@@ -65,6 +65,7 @@ public class EntregaService {
 
         var guardada = entregaRepository.save(entrega);
 
+        pushTokenService.sendNotification(usuario.getId(), "Nueva entrega", "Se te ha asignado una nueva entrega");
 
         return guardada.convertirADTO();
     }
