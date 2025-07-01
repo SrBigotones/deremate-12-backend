@@ -1,5 +1,6 @@
 package ar.edu.uade.deremateapp.back.services;
 
+import ar.edu.uade.deremateapp.back.dto.EntregaConQRDTO;
 import ar.edu.uade.deremateapp.back.exceptions.CodigoQRInvalidoException;
 import ar.edu.uade.deremateapp.back.model.Entrega;
 import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
@@ -73,5 +74,28 @@ public class QRService {
      */
     public Optional<Entrega> getEntregaPorId(Long entregaId) {
         return entregaRepository.findById(entregaId);
+    }
+
+    /**
+     * Obtiene todas las entregas pendientes con sus QRs generados
+     * @return Lista de entregas pendientes con QRs en Base64
+     */
+    public List<EntregaConQRDTO> getEntregasPendientesConQRs() {
+        List<Entrega> entregasPendientes = getEntregasPendientes();
+        List<EntregaConQRDTO> entregasConQR = new java.util.ArrayList<>();
+        
+        for (Entrega entrega : entregasPendientes) {
+            try {
+                String qrBase64 = generarQRParaEntrega(entrega.getId());
+                EntregaConQRDTO dto = EntregaConQRDTO.fromEntrega(entrega);
+                dto.setQrBase64(qrBase64);
+                entregasConQR.add(dto);
+            } catch (Exception e) {
+                // Si hay error generando el QR, continuamos con las demás entregas
+                System.err.println("Error generando QR para entrega " + entrega.getId() + ": " + e.getMessage());
+            }
+        }
+        
+        return entregasConQR;
     }
 } 

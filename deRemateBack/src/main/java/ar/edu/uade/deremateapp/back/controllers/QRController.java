@@ -1,5 +1,6 @@
 package ar.edu.uade.deremateapp.back.controllers;
 
+import ar.edu.uade.deremateapp.back.dto.EntregaConQRDTO;
 import ar.edu.uade.deremateapp.back.dto.QRScanRequest;
 import ar.edu.uade.deremateapp.back.model.Entrega;
 import ar.edu.uade.deremateapp.back.services.QRService;
@@ -57,5 +58,16 @@ public class QRController {
         return qrService.getEntregaPorId(entregaId)
                 .map(entrega -> ResponseEntity.ok(entrega))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Obtiene las entregas pendientes como JSON para actualización dinámica
+     * @return ResponseEntity con la lista de entregas pendientes con QRs
+     */
+    @GetMapping("/entregas-pendientes")
+    @ResponseBody
+    public ResponseEntity<List<EntregaConQRDTO>> getEntregasPendientes() {
+        List<EntregaConQRDTO> entregasPendientes = qrService.getEntregasPendientesConQRs();
+        return ResponseEntity.ok(entregasPendientes);
     }
 } 
