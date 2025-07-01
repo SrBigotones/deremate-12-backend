@@ -1,10 +1,7 @@
 package ar.edu.uade.deremateapp.back.services;
 
 import ar.edu.uade.deremateapp.back.dto.EntregaConQRDTO;
-import ar.edu.uade.deremateapp.back.exceptions.CodigoQRInvalidoException;
 import ar.edu.uade.deremateapp.back.model.Entrega;
-import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
-import ar.edu.uade.deremateapp.back.repository.EntregaRepository;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
@@ -19,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class QRService {
@@ -48,24 +44,13 @@ public class QRService {
 
     /**
      * Obtiene todas las entregas en estado PENDIENTE
-     * @return Lista de entregas pendientes
+     * @return Lista de entregas pendientes, sin QRs, viene de EntregaService
      */
     public List<Entrega> getEntregasPendientes() {
         return entregaService.getEntregasPendientes();
     }
 
-    /**
-     * Obtiene una entrega por ID
-     *
-     * @param entregaId ID de la entrega
-     * @return Optional con la entrega si existe
-     *
-     * public Optional<Entrega> getEntregaPorId(Long entregaId) {
-     *         return entregaRepository.findById(entregaId);
-     *     }
-     */
-
-
+    
     /**
      * Obtiene todas las entregas pendientes con sus QRs generados
      * @return Lista de entregas pendientes con QRs en Base64
