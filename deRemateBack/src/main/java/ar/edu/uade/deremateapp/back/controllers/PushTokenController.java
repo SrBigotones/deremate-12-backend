@@ -24,7 +24,6 @@ public class PushTokenController {
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody RegisterPushTokenRequest request) throws UsuarioAutenticadoNoEncontradoException {
         Usuario user = SecurityUtils.getCurrentUser();
-        System.out.println(request);
 
         pushTokenService.registerToken(
                 user.getId(),
@@ -34,12 +33,4 @@ public class PushTokenController {
         return ResponseEntity.ok().build();
     }
 
-
-    @PostMapping("/trigger-manually")
-    public ResponseEntity<Void> triggerManually(@RequestBody RegisterPushTokenRequest request) throws UsuarioAutenticadoNoEncontradoException, IOException {
-
-        pushTokenService.triggerManually(request.getExpoToken());
-
-        return ResponseEntity.ok().build();
-    }
 }

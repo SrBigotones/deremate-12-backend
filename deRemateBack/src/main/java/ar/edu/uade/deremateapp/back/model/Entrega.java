@@ -50,6 +50,7 @@ public class Entrega {
         dto.setFechaEntrega(this.getFechaEntrega());
         dto.setObservaciones(this.getObservaciones());
         dto.setUsuarioId(this.getUsuario().getId());
+        dto.setEmailCliente(this.getEmailCliente());
 
         dto.setCalificacion(this.getCalificacion());
         dto.setComentario(this.getComentario());
