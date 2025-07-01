@@ -58,6 +58,7 @@ public class EntregaService {
         entrega.setFechaCreacion(LocalDateTime.now());
         entrega.setObservaciones(dto.getObservaciones());
         entrega.setUsuario(usuario);
+        entrega.setEmailCliente(dto.getEmailCliente());
         entrega.setCalificacion(0);
         entrega.setComentario("");
 
