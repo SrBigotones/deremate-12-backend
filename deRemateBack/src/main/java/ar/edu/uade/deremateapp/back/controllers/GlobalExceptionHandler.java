@@ -1,10 +1,7 @@
 package ar.edu.uade.deremateapp.back.controllers;
 
 import ar.edu.uade.deremateapp.back.dto.ErrorDTO;
-import ar.edu.uade.deremateapp.back.exceptions.MailAlreadyUsedException;
-import ar.edu.uade.deremateapp.back.exceptions.UsuarioAutenticadoNoEncontradoException;
-import ar.edu.uade.deremateapp.back.exceptions.UsuarioConEmailNotFoundException;
-import ar.edu.uade.deremateapp.back.exceptions.UsuarioInactivoException;
+import ar.edu.uade.deremateapp.back.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -36,6 +33,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> usuarioAutenticadoNoEncontradoException(Exception ex, WebRequest request) {
         logError(ex);
         return new ResponseEntity<>(new ErrorDTO(ex.getMessage()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(PushNotificationSendException.class)
+    public ResponseEntity<?> pushNotificationSendException(Exception ex, WebRequest request) {
+        logError(ex);
+        return new ResponseEntity<>(new ErrorDTO(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(UsuarioNotFoundException.class)
+    public ResponseEntity<?> usuarioNotFoundException(Exception ex, WebRequest request) {
+        logError(ex);
+        return new ResponseEntity<>(new ErrorDTO(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     private void logError(Exception e) {
