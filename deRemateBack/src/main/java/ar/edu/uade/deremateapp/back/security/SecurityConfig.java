@@ -41,7 +41,8 @@ public class SecurityConfig {
                                         "/auth/confirmar-registro",
                                         "/auth/olvido-password",
                                         "/auth/confirmar-passwd-recovery",
-                                        "/images/**"
+                                        "/images/**",
+                                        "/qr/**"
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 )
