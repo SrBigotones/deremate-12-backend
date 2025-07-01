@@ -1,7 +1,6 @@
 package ar.edu.uade.deremateapp.back.controllers;
 
 import ar.edu.uade.deremateapp.back.dto.EntregaConQRDTO;
-import ar.edu.uade.deremateapp.back.dto.QRScanRequest;
 import ar.edu.uade.deremateapp.back.model.Entrega;
 import ar.edu.uade.deremateapp.back.services.QRService;
 import org.springframework.beans.factory.annotation.Autowired;
