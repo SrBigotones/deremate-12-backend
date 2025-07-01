@@ -60,18 +60,9 @@ public class EntregaService {
         entrega.setUsuario(usuario);
         entrega.setCalificacion(0);
         entrega.setComentario("");
+        entrega.setImagen("");
 
-
-        // Validar que solo pueda calificar, comentar o subir imagen si está ENTREGADO
-        if (dto.getCalificacion() != null || dto.getComentario() != null || dto.getImagen() != null) {
-            if (dto.getEstado() != EstadoEntrega.ENTREGADO) {
-                throw new IllegalStateException("Solo se puede asignar calificación, comentario o imagen si la entrega está ENTREGADA.");
-            }
-        }
-
-
-        entrega.setCalificacion(dto.getCalificacion());
-        entrega.setComentario(dto.getComentario());
+        var guardada = entregaRepository.save(entrega);
 
 
         return guardada.convertirADTO();
