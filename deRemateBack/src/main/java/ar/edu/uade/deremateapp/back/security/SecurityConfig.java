@@ -34,6 +34,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth ->
                         auth
+
                                 .requestMatchers("/h2-console/**",
                                         "/auth/login",
                                         "/auth/registro",

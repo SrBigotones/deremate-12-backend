@@ -1,30 +1,23 @@
 package ar.edu.uade.deremateapp.back.controllers;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import ar.edu.uade.deremateapp.back.exceptions.InvalidEstadoEntregaException;
-import ar.edu.uade.deremateapp.back.exceptions.UsuarioAutenticadoNoEncontradoException;
+import ar.edu.uade.deremateapp.back.dto.EntregaDTO;
+import ar.edu.uade.deremateapp.back.dto.ErrorDTO;
+import ar.edu.uade.deremateapp.back.dto.QRScanRequest;
+import ar.edu.uade.deremateapp.back.exceptions.*;
 import ar.edu.uade.deremateapp.back.model.Entrega;
 import ar.edu.uade.deremateapp.back.model.EstadoEntrega;
 import ar.edu.uade.deremateapp.back.model.Usuario;
+import ar.edu.uade.deremateapp.back.services.EntregaService;
+import ar.edu.uade.deremateapp.back.services.UserService;
 import ar.edu.uade.deremateapp.back.util.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import ar.edu.uade.deremateapp.back.dto.EntregaDTO;
-import ar.edu.uade.deremateapp.back.services.EntregaService;
-import ar.edu.uade.deremateapp.back.services.UserService;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/entregas")
@@ -57,23 +50,44 @@ public class EntregaController {
 
     
     @PostMapping
-    public ResponseEntity<EntregaDTO> crearEntrega(@RequestBody EntregaDTO entregaDto) {
+    public ResponseEntity<EntregaDTO> crearEntrega(@RequestBody EntregaDTO entregaDto) throws Exception {
         return ResponseEntity.ok(entregaService.crearEntrega(entregaDto));
     }
 
-    
-    @PutMapping("/{id}/estado")
+    @PutMapping("/{id}/cancelar")
     public ResponseEntity<?> actualizarEstado(
-            @PathVariable Long id,
-            @RequestParam EstadoEntrega nuevoEstado
+            @PathVariable Long id
     ) {
         try {
-            var response = entregaService.actualizarEstado(id, nuevoEstado);
+            var response = entregaService.cancelar(id);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return new ResponseEntity(e, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ErrorDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
 
+    }
+
+    @PutMapping("/{id}/finalizar/{codigo}")
+    public ResponseEntity<?> finalizarEntrega(
+            @PathVariable Long id,
+            @PathVariable String codigo
+    ) {
+        try {
+            var response = entregaService.finalizarEntrega(id, codigo);
+            return ResponseEntity.ok(response);
+        } catch (CodigoConfirmacionEntregaInvalido e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorDTO("Codigo de confirmacion invalido"));
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ErrorDTO(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @PostMapping("/{id}/calificar")
+    public ResponseEntity<?> actualizarCalificacion(@PathVariable Long id, @RequestBody EntregaDTO entregaDto) throws Exception {
+        entregaDto.setId(id);
+        entregaService.actualizarCalificacion(entregaDto);
+        return ResponseEntity.ok("Calificado con exito");
     }
 
    
@@ -82,12 +96,27 @@ public class EntregaController {
         return ResponseEntity.ok(entregaService.getEntregaPorId(id));
     }
 
+    /**
+     * Endpoint para escanear QR y cambiar estado de entrega
+     * @param request Solicitud con el contenido del QR
+     * @return ResponseEntity con el resultado
+     */
+    @PostMapping("/escanear-qr")
+    public ResponseEntity<?> escanearQR(@RequestBody QRScanRequest request) throws EntregaNotFoundException {
+        try {
+            entregaService.transicionarAEnViaje(request.getContenidoQR());
+
+            return ResponseEntity.ok("Entrega actualizada correctamente a estado EN_VIAJE");
+        } catch (EntregaNotFoundException | IllegalStateException | CodigoQRInvalidoException e) {
+            return ResponseEntity.badRequest().body("Error al procesar el QR. Verifique que la entrega esté en estado PENDIENTE");
+        }
+    }
+
     private EstadoEntrega getEstadoEntrega(String value) throws InvalidEstadoEntregaException {
         try {
             return EstadoEntrega.valueOf(value);
         } catch (IllegalArgumentException e) {
             throw new InvalidEstadoEntregaException(value);
         }
-
     }
 }

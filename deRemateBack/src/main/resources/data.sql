@@ -4,6 +4,7 @@ INSERT INTO USUARIO(USERNAME, PASSWORD, EMAIL, NOMBRE, APELLIDO, DOCUMENTO, ESTA
    ('user3', '$2a$10$bhoNyi0sxaGQu.50zOiUL.SKpSPGHytwGruHhYYP2hSDZpkYHEIri', 'user3@test.com', 'Usuario', 'Tres', 35555555, 'ACTIVO'),
    ('user4', '$2a$10$bhoNyi0sxaGQu.50zOiUL.SKpSPGHytwGruHhYYP2hSDZpkYHEIri', 'user4@test.com', 'Usuario', 'Cuatro', 36666666, 'ACTIVO');
 
+
 INSERT INTO ENTREGA (ESTADO, FECHA_CREACION, FECHA_ENTREGA, USUARIO_ID, DIRECCION_ENTREGA, OBSERVACIONES, COMENTARIO, CALIFICACION, IMAGEN) VALUES
 (1, '2025-04-19 14:23:45.123456', null, 1, 'Lima 757, C1073 Cdad. Autónoma de Buenos Aires', 'Test creacion', null, null, null),
 (4, '2025-04-19 14:23:45.123456', null, 1, 'Lima 757, C1073 Cdad. Autónoma de Buenos Aires', 'Test creacion', null, null, null),
@@ -13,3 +14,4 @@ INSERT INTO ENTREGA (ESTADO, FECHA_CREACION, FECHA_ENTREGA, USUARIO_ID, DIRECCIO
 (2, '2025-04-22 08:45:00.000000', null, 1, 'Av. Rivadavia 6800, C1406 Cdad. Autónoma de Buenos Aires', 'Cliente solicita llamada previa', null, null, null),
 (3, '2025-04-23 12:00:00.000000', '2025-04-23 15:45:00.000000', 1, 'Av. Corrientes 3480, C1193 Cdad. Autónoma de Buenos Aires', 'Departamento 3B, timbre roto', 'Tuve que bajar a abrir, pero el chico fue cordial.', 4, 'entregas_imagen3'),
 (3, '2025-04-24 14:10:00.000000', '2025-04-24 16:00:00.000000', 1, 'Juramento 2089, C1428 Cdad. Autónoma de Buenos Aires', 'Entregar en portería', 'Perfecto, dejaron en portería como pedí.', 5, 'entregas_imagen1');
+
